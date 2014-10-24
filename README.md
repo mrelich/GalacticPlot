@@ -13,5 +13,5 @@ plot in galactic and equatorial coordinates.
 
 To execute:
 1.) ipython -pylab
-2.) from plot improt *
-3.) plotTree() <---- This will be updated
+2.) from plot import *
+3.) plotTree("filename.root")
