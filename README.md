@@ -15,3 +15,8 @@ To execute:
 1.) ipython -pylab
 2.) from plot import *
 3.) plotTree("filename.root")
+
+Adding galacticPlane.txt and equator.txt which will hold
+the coordinates to draw the lines on the two respected 
+plots.  This removes depence on ephem package, which is
+not super popular.

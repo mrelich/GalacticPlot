@@ -1,6 +1,6 @@
 
 from math import pi
-import ephem
+#import ephem
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -29,22 +29,14 @@ def galPlot(lat, lon, origin=0, title="Galactic",projection="mollweide"):
     # Draw a grid
     plot.grid(True)
 
-    # Plot Hemisphere line
-    hp = hemPoints()
-    
-    # Convert to range [180,-180]
-    hp_lat = hp[:,0]
-    hp_lat_shift = convertPoints(hp_lat,origin)
-
-    # Now reform and sort
-    remade = np.zeros((360,2))
-    for i in range(len(hp_lat_shift)):
-        remade[i] = (hp_lat_shift[i],hp[i][1])
-    remade = remade[remade[:,0].argsort()]
+    # Plot equator
+    eq = loadEquator()
 
     # Plot Hemisphere divide
-    plot.plot(remade[:,0],remade[:,1],'r-')
-
+    plot.plot(eq[:,0],eq[:,1],'r-')
+    
+    # Save the plot
+    fig.savefig("galacticplot.png")
 
 #------------------------------------#
 # Plot Galactic Coordinates
@@ -71,22 +63,40 @@ def eqPlot(RA, dec, origin=0, title="Equatorial",projection="mollweide"):
     # Draw a grid
     plot.grid(True)
 
-    # Plot Galactic plane
-    gal = galPoints()
+    # Get galactic plane points
+    gal = loadGalactic()
     
-    # Convert to range [180,-180]
-    gal_RA = gal[:,0]
-    gal_RA_shift = convertPoints(gal_RA,origin)
-
-    # Now reform and sort
-    remade = np.zeros((360,2))
-    for i in range(len(gal_RA_shift)):
-        remade[i] = (gal_RA_shift[i],gal[i][1])
-    remade = remade[remade[:,0].argsort()]
-
     # Plot Hemisphere divide
-    plot.plot(remade[:,0],remade[:,1],'r-')
-    
+    plot.plot(gal[:,0],gal[:,1],'r-')
+
+#------------------------------------#
+# Load equator for galactic plot
+# this is to reduce dependence on
+# the ephem package
+#------------------------------------#
+def loadEquator():
+    points = []
+    infile = open("equator.txt","r")
+    for line in infile:
+        lat = float(line.split()[0])
+        lon = float(line.split()[1])
+        points.append([lat,lon])
+    return np.array(points)
+
+#------------------------------------#
+# Load galactic plane for equatorial plot
+# this is to reduce dependence on
+# the ephem package
+#------------------------------------#
+def loadGalactic():
+    points = []
+    infile = open("galacticPlane.txt","r")
+    for line in infile:
+        RA  = float(line.split()[0])
+        dec = float(line.split()[1])
+        points.append([RA,dec])
+    return np.array(points)
+
 #------------------------------------#
 # Convert points to [180,-180]
 #------------------------------------#
@@ -100,30 +110,30 @@ def convertPoints(points,origin):
 #------------------------------------#
 # Get equator in galactic coords
 #------------------------------------#
-def hemPoints():
-    
-    dec = 0
-    RA_array = np.arange(0,360)
-    gal_array = np.zeros((360,2))
-    for RA in RA_array:
-        eq = ephem.Equatorial(np.radians(RA),np.radians(dec))
-        ga = ephem.Galactic(eq)
-        gal_array[RA] = ga.get()
-    
-    return gal_array
+#def hemPoints():
+#    
+#    dec = 0
+#    RA_array = np.arange(0,360)
+#    gal_array = np.zeros((360,2))
+#    for RA in RA_array:
+#        eq = ephem.Equatorial(np.radians(RA),np.radians(dec))
+#        ga = ephem.Galactic(eq)
+#        gal_array[RA] = ga.get()
+#    
+#    return gal_array
 
 
 #------------------------------------#
 # Get equator in galactic coords
 #------------------------------------#
-def galPoints():
-    
-    lat = 0
-    lon_array = np.arange(0,360)
-    eq_array = np.zeros((360,2))
-    for lon in lon_array:
-        ga = ephem.Galactic(np.radians(lon),np.radians(lat))
-        eq = ephem.Equatorial(ga)
-        eq_array[lon] = eq.get()
-    
-    return eq_array
+#def galPoints():
+#    
+#    lat = 0
+#    lon_array = np.arange(0,360)
+#    eq_array = np.zeros((360,2))
+#    for lon in lon_array:
+#        ga = ephem.Galactic(np.radians(lon),np.radians(lat))
+#        eq = ephem.Equatorial(ga)
+#        eq_array[lon] = eq.get()
+#    
+#    return eq_array
